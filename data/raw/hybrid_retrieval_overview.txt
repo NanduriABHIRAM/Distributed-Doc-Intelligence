@@ -1,0 +1,10 @@
+Hybrid retrieval combines lexical keyword matching with semantic similarity.
+BM25 rewards documents that contain important query terms, especially rare
+terms. Vector retrieval compares document embeddings and can find passages
+with related meaning even when the wording is different. Reciprocal Rank
+Fusion combines the ranked lists without assuming their scores share a scale.
+
+Retrieval-augmented generation first retrieves relevant document chunks. An
+answer generator uses those chunks as evidence and should cite the source
+documents. This process reduces unsupported answers and lets users verify the
+information returned by the system.
