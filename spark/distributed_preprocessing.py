@@ -1,12 +1,13 @@
-"""Distributed document preprocessing transformations."""
+"""Compatibility module for the retired PySpark transformations.
 
-from text_analytics.preprocessing import preprocess_text
+Normalization and chunking are performed by the Scala Spark batch job so the
+project has one distributed implementation and one output schema.
+"""
 
 
-def preprocess_documents(documents):
-    """Normalize local document dictionaries or a Spark DataFrame's ``text`` column."""
-    if hasattr(documents, "withColumn"):
-        from pyspark.sql.functions import col, regexp_replace, trim
-
-        return documents.withColumn("clean_text", trim(regexp_replace(col("text"), r"\\s+", " ")))
-    return [dict(document, clean_text=preprocess_text(document["text"])) for document in documents]
+def preprocess_documents(*_args, **_kwargs):
+    """Direct callers to the Scala Spark batch job."""
+    raise RuntimeError(
+        "Distributed preprocessing is implemented in spark-scala, not PySpark. "
+        "See spark-scala/README.md."
+    )

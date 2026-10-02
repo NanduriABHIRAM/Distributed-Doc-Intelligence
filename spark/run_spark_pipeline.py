@@ -1,12 +1,14 @@
-"""Entrypoint for the distributed preprocessing job."""
+"""Compatibility notice for the legacy PySpark batch entry point.
 
-from spark.spark_session import create_spark_session
+The production batch job is now implemented in ``spark-scala``. Run it with
+``sbt run -- --input <raw-path> --output <processed-path>`` and pass the
+resulting ``chunks_json`` directory to ``run_pipeline.py --processed-chunks``.
+"""
 
 
-def run_spark_pipeline(input_path: str, output_path: str):
-    """Read text files with Spark, normalize whitespace, and write JSON output."""
-    spark = create_spark_session()
-    frame = spark.read.text(input_path).toDF("text")
-    from spark.distributed_preprocessing import preprocess_documents
-
-    preprocess_documents(frame).write.mode("overwrite").json(output_path)
+def run_spark_pipeline(*_args, **_kwargs):
+    """Raise an actionable message instead of running the retired PySpark job."""
+    raise RuntimeError(
+        "The Spark batch pipeline is implemented in Scala. "
+        "See spark-scala/README.md for the sbt command."
+    )

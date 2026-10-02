@@ -4,7 +4,11 @@ from collections import Counter
 
 from text_analytics.preprocessing import tokenize
 
-STOP_WORDS = {"a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "in", "is", "it", "of", "on", "or", "that", "the", "to", "with"}
+STOP_WORDS = {
+    "a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "in", "is", "it", "of", "on", "or",
+    "that", "the", "to", "with", "what", "which", "who", "when", "where", "why", "how", "explain", "define",
+    "describe", "tell", "give", "please",
+}
 
 
 def extract_keywords(text: str, top_k: int = 10) -> list[str]:

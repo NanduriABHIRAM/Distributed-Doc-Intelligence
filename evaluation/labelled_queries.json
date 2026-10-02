@@ -1,0 +1,300 @@
+{
+  "_comment": "Hand-labelled evaluation set. 'relevant_filename_patterns' is matched case-insensitively against corpus filenames to resolve document IDs, so labels stay readable and survive re-ingestion. Review and correct before treating as ground truth. Question types are deliberately skewed toward hard cases: definitional, acronym, comparison, and cross-document.",
+  "queries": [
+    {
+      "query": "what is an operating system",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Introduction and Types of OS", "Operating Systems Unit 2"]
+    },
+    {
+      "query": "types of operating system",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Introduction and Types of OS", "Operating Systems Unit 2"]
+    },
+    {
+      "query": "what is a deadlock and what are its necessary conditions",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Deadlock in DBMS", "critical section", "Operating System Concepts"]
+    },
+    {
+      "query": "what is normalization in databases",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Normalization", "unit 1 DBMS", "DBMS Unit 3", "DBMS UNIT 3"]
+    },
+    {
+      "query": "explain deadlock prevention",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Deadlock in DBMS", "Operating System Concepts", "critical section"]
+    },
+    {
+      "query": "what is a supervisor key and how is it determined",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Superkeys", "unit 1 DBMS"]
+    },
+    {
+      "query": "functional dependency in dbms",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Functional Dependency", "unit 1 DBMS"]
+    },
+    {
+      "query": "what is a process and how does it differ from a program",
+      "type": "definitional",
+      "relevant_filename_patterns": ["program, process and kernel", "Operating System Concepts"]
+    },
+    {
+      "query": "process life cycle stages",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Process Life Cycle", "Operating System Concepts"]
+    },
+    {
+      "query": "what is process scheduling",
+      "type": "definitional",
+      "relevant_filename_patterns": ["process scheduling", "Scheduling"]
+    },
+    {
+      "query": "system calls in operating system",
+      "type": "definitional",
+      "relevant_filename_patterns": ["System Calls", "Operating System Concepts"]
+    },
+    {
+      "query": "what is a critical section",
+      "type": "definitional",
+      "relevant_filename_patterns": ["critical section", "Operating System Concepts"]
+    },
+    {
+      "query": "definition of transfer learning",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Transfer Learning"]
+    },
+    {
+      "query": "what is bias and variance tradeoff",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Bias and Varience", "Ensemble Learning"]
+    },
+    {
+      "query": "what is a convolutional neural network",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Convolutional Neural Networks"]
+    },
+    {
+      "query": "recurrent neural network LSTM architecture",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Recurrent Neural Networks"]
+    },
+    {
+      "query": "what are autoencoders",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Autoencoders", "Image Denoising"]
+    },
+    {
+      "query": "ensemble learning bagging and boosting",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Ensemble Learning"]
+    },
+    {
+      "query": "loss functions in deep learning",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Loss Function"]
+    },
+    {
+      "query": "what is a support vector machine",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Support Vector Machine"]
+    },
+    {
+      "query": "singular value decomposition explained",
+      "type": "definitional",
+      "relevant_filename_patterns": ["SVD and HOSVD"]
+    },
+    {
+      "query": "what is ADMM alternating direction method of multipliers",
+      "type": "definitional",
+      "relevant_filename_patterns": ["ADMM", "Augmented Lagrangian"]
+    },
+    {
+      "query": "proximal algorithm matrix splitting",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Proximal Algorithm", "matrix splitting"]
+    },
+    {
+      "query": "what is dynamic mode decomposition",
+      "type": "definitional",
+      "relevant_filename_patterns": ["DMD and  Hankelization", "Variant of DMD"]
+    },
+    {
+      "query": "hankel matrix definition",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Hankel Matrices"]
+    },
+    {
+      "query": "kron product of matrices",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Kronecker Product"]
+    },
+    {
+      "query": "toeplitz matrix properties",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Toeplitz Matrix"]
+    },
+    {
+      "query": "shift invariant filter",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Shift Invariant Filter"]
+    },
+    {
+      "query": "what is a partial differential equation",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Intro to PDE", "Classification of PDEs"]
+    },
+    {
+      "query": "classification of partial differential equations elliptic parabolic hyperbolic",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Classification of PDEs", "Intro to PDE"]
+    },
+    {
+      "query": "finite difference method for solving PDE",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Finite difference Method"]
+    },
+    {
+      "query": "laplace transform properties and applications",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Laplace Transform"]
+    },
+    {
+      "query": "fourier matrix and special matrices",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Fourier to Special Matrix", "Intro to Special Matrix"]
+    },
+    {
+      "query": "convex set and convex functions",
+      "type": "definitional",
+      "relevant_filename_patterns": ["convex set and functions"]
+    },
+    {
+      "query": "network topology types",
+      "type": "definitional",
+      "relevant_filename_patterns": ["netw topology", "types of network", "netw intro"]
+    },
+    {
+      "query": "what is a computer network",
+      "type": "definitional",
+      "relevant_filename_patterns": ["netw intro", "types of network", "Computer Networks"]
+    },
+    {
+      "query": "network devices and their functions",
+      "type": "definitional",
+      "relevant_filename_patterns": ["netw dev", "Computer Networks"]
+    },
+    {
+      "query": "ordinary differential equation introduction",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Intro To ODE"]
+    },
+    {
+      "query": "runge kutta method for numerical integration",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Runge_Kutta"]
+    },
+    {
+      "query": "first order PDE solution methods",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Solution of first order PDE"]
+    },
+    {
+      "query": "modelling simulation and analysis introduction",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Modelling, Simulation & Analysis - Lecture 1"]
+    },
+    {
+      "query": "what is mongodb",
+      "type": "definitional",
+      "relevant_filename_patterns": ["MongoDB"]
+    },
+    {
+      "query": "inception mobilenet efficientnet comparison",
+      "type": "definitional",
+      "relevant_filename_patterns": ["InceptionNet+MobileNet+EfficientNet"]
+    },
+    {
+      "query": "image denoising using autoencoders",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Image Denoising", "Autoencoders"]
+    },
+    {
+      "query": "post and storages in operating system",
+      "type": "definitional",
+      "relevant_filename_patterns": ["POST and Storages"]
+    },
+    {
+      "query": "what is simulation modelling verification and validation",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Modelling, Simulation & Analysis - Lecture 2", "Modelling, Simulation & Analysis - Lecture 3"]
+    },
+    {
+      "query": "harmonic oscillator simulation SHM",
+      "type": "definitional",
+      "relevant_filename_patterns": ["SHM_simulation"]
+    },
+    {
+      "query": "computational mechanics finite element lecture",
+      "type": "definitional",
+      "relevant_filename_patterns": ["Computational Mechanics 2 - Lecture 4", "Computational Mechanics 2 - Lecture 5"]
+    },
+    {
+      "query": "how does ADMM relate to augmented lagrangian methods",
+      "type": "comparison",
+      "relevant_filename_patterns": ["ADMM", "Augmented Lagrangian"]
+    },
+    {
+      "query": "difference between deadlock prevention and deadlock avoidance",
+      "type": "comparison",
+      "relevant_filename_patterns": ["Deadlock in DBMS", "Operating System Concepts", "critical section"]
+    },
+    {
+      "query": "compare batch time sharing and real time operating systems",
+      "type": "comparison",
+      "relevant_filename_patterns": ["Introduction and Types of OS", "Operating Systems Unit 2"]
+    },
+    {
+      "query": "how does 3NF compare to BCNF in normalization",
+      "type": "comparison",
+      "relevant_filename_patterns": ["Normalization", "Functional Dependency", "unit 1 DBMS"]
+    },
+    {
+      "query": "contrast bagging with boosting in ensemble methods",
+      "type": "comparison",
+      "relevant_filename_patterns": ["Ensemble Learning", "Bias and Varience"]
+    },
+    {
+      "query": "differences between elastic and inelastic collision",
+      "type": "comparison",
+      "relevant_filename_patterns": ["quantum-physics-hc-verma", "Refrence.pdf"]
+    },
+    {
+      "query": "boot process POST power on self test",
+      "type": "cross_document",
+      "relevant_filename_patterns": ["POST and Storages", "Operating System Concepts", "Introduction and Types of OS"]
+    },
+    {
+      "query": "process scheduling algorithms and deadlock avoidance",
+      "type": "cross_document",
+      "relevant_filename_patterns": ["process scheduling", "Scheduling", "Deadlock in DBMS", "critical section"]
+    },
+    {
+      "query": "database transactions concurrency and locking",
+      "type": "cross_document",
+      "relevant_filename_patterns": ["Deadlock in DBMS", "unit 1 DBMS", "DBMS Unit 3"]
+    },
+    {
+      "query": "matrix decompositions used in dimensionality reduction",
+      "type": "cross_document",
+      "relevant_filename_patterns": ["SVD and HOSVD", "Support Vector Machine", "Intro to Special Matrix"]
+    },
+    {
+      "query": "how are neural networks trained using gradient descent and loss functions",
+      "type": "cross_document",
+      "relevant_filename_patterns": ["Loss Function", "Introduction to Deep Learning", "Deep Learning with Pytorch"]
+    }
+  ]
+}

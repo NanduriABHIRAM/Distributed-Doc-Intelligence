@@ -1,10 +1,14 @@
-"""Spark session creation and configuration."""
+"""Compatibility module for the retired PySpark implementation.
+
+The distributed workload belongs to the Scala Spark project in ``spark-scala``.
+Keeping this small module gives callers an explicit migration message instead
+of silently starting a separate Python Spark implementation.
+"""
 
 
-def create_spark_session(app_name: str = "DistributedDocumentIntelligence"):
-    """Create a local-or-cluster Spark session when PySpark is installed."""
-    try:
-        from pyspark.sql import SparkSession
-    except ImportError as error:
-        raise RuntimeError("Spark support requires `pip install pyspark` and a Java runtime.") from error
-    return SparkSession.builder.appName(app_name).getOrCreate()
+def create_spark_session(*_args, **_kwargs):
+    """Direct callers to the Scala Spark batch job."""
+    raise RuntimeError(
+        "Spark processing is implemented in Scala. "
+        "Run the job in spark-scala with sbt or spark-submit."
+    )

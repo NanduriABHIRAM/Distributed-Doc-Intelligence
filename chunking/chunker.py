@@ -1,5 +1,6 @@
 """Split normalized documents into retrievable chunks."""
 
+from text_analytics.keyword_extraction import extract_keywords
 
 def chunk_text(text: str, chunk_size: int = 180, overlap: int = 30) -> list[str]:
     """Split *text* into overlapping word chunks."""
@@ -22,6 +23,7 @@ def chunk_documents(documents: list[dict], chunk_size: int = 180, overlap: int =
                     "source": document["source"],
                     "text": text,
                     "metadata": document["metadata"],
+                    "keywords": extract_keywords(text, top_k=12),
                 }
             )
     return chunks

@@ -1,12 +1,12 @@
 """In-memory vector similarity retriever."""
 
-from embeddings.embedding_model import HashEmbeddingModel, load_embedding_model
+from embeddings.sentence_encoder import load_embedding_model
 
 
 class VectorRetriever:
     """Retrieve chunks with cosine similarity over normalized embeddings."""
 
-    def __init__(self, chunks: list[dict] | None = None, model: HashEmbeddingModel | None = None):
+    def __init__(self, chunks: list[dict] | None = None, model=None):
         self.model = model or load_embedding_model()
         self.chunks: list[dict] = []
         if chunks:

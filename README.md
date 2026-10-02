@@ -20,7 +20,7 @@ The project combines four complementary capabilities:
 
 ## Objectives
 
-- Ingest documents from supported sources such as PDF, DOCX, TXT, and HTML.
+- Ingest documents from PDF, DOCX, TXT, Markdown, PPTX, and PPSX sources.
 - Clean, normalize, and enrich text with useful NLP metadata.
 - Process large document batches using a distributed framework such as Apache
   Spark.
@@ -57,7 +57,8 @@ Raw storage    Metadata store    BM25 index   Vector index
 2. **Clean and analyze** text: remove noise, tokenize, identify entities, and
    optionally summarize documents.
 3. **Chunk** documents into smaller overlapping passages while retaining source
-   metadata.
+   metadata. This offline, high-volume step is implemented in Scala/Spark in
+   [`spark-scala`](spark-scala/README.md).
 4. **Index** chunks twice: once for BM25 keyword retrieval and once as vector
    embeddings for semantic retrieval.
 5. **Retrieve** candidate chunks with both methods, then merge and rerank them.
@@ -106,7 +107,7 @@ The retrieval modules are located in `retrieval/`:
 
 | Area | Suggested options |
 | --- | --- |
-| Distributed processing | Apache Spark, PySpark |
+| Distributed processing | Apache Spark with Scala |
 | Document storage | HDFS, S3, MinIO, or local storage for development |
 | Text analytics | spaCy, NLTK, Hugging Face Transformers |
 | Lexical search | Elasticsearch/OpenSearch or `rank-bm25` |
@@ -135,7 +136,7 @@ Measure the system with a small labelled query set and report:
 4. Generate embeddings and implement vector retrieval.
 5. Add rank fusion and compare hybrid retrieval against the individual methods.
 6. Build the RAG pipeline with source citations.
-7. Add Spark jobs for large-scale ingestion and indexing.
+7. Run the Scala/Spark batch job for large-scale extraction, cleaning, and chunking.
 8. Build API/frontend interfaces and run the evaluation suite.
 
 ## Getting started
