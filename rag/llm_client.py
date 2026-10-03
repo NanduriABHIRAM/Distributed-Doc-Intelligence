@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import os
 
+# Enables direct use of this module outside the main pipeline as well.
+import config  # noqa: F401
+
 
 class LLMNotConfiguredError(RuntimeError):
     """Raised when generation was requested without an LLM configuration."""

@@ -6,6 +6,9 @@ import os
 from pathlib import Path
 import re
 
+# Load .env before importing modules that read DDI_* defaults at import time.
+import config  # noqa: F401
+
 from chunking.chunker import chunk_documents  # noqa: F401 - flat chunker kept for A/B comparison
 from chunking.structure_chunker import chunk_documents_structured
 from embeddings.embedding_cache import describe

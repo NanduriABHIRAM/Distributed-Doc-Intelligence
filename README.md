@@ -154,6 +154,11 @@ Every factual claim is instructed to cite its chunk as `[Source N]`; answers
 without a valid citation are rejected. Without the key, the project stays fully
 local and uses its existing extractive answer generator instead.
 
+All local API and runtime settings are in [`.env.example`](.env.example). A
+private `.env` template is created in the project root and is ignored by Git.
+Open `.env` and add your Gemini key after `GEMINI_API_KEY=`. The application
+loads it automatically, so no PowerShell environment command is required.
+
 In PowerShell for the current terminal session:
 
 ```powershell
