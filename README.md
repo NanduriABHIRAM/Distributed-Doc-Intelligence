@@ -144,3 +144,38 @@ Measure the system with a small labelled query set and report:
 This repository currently contains the project scaffold. Add dependencies to
 `requirements.txt`, install them with `pip install -r requirements.txt`, and
 then implement the modules in the order described in the development roadmap.
+
+### Enable LLM answer generation
+
+The pipeline always retrieves and reranks document chunks first. When a
+`GEMINI_API_KEY` environment variable is present, `pipeline.answer()` then uses
+the Gemini API to synthesize a concise answer from only those chunks.
+Every factual claim is instructed to cite its chunk as `[Source N]`; answers
+without a valid citation are rejected. Without the key, the project stays fully
+local and uses its existing extractive answer generator instead.
+
+In PowerShell for the current terminal session:
+
+```powershell
+$env:GEMINI_API_KEY = "your_api_key"
+$env:RAG_LLM_MODEL = "gemini-3.8-flash"  # optional; choose your deployed model
+python run_pipeline.py --question "What is a deadlock?"
+```
+
+To compare approaches in code, pass `generator="llm"` to require generation,
+or `generator="extractive"` to force the offline baseline. Do not put API keys
+in source files or commit them; `.env` is already ignored by Git.
+
+### Run the student question-answering session
+
+Run without `--question` to keep the document index in memory and let students
+ask multiple questions:
+
+```powershell
+python run_pipeline.py
+```
+
+Use `exit` when finished. The first run builds local chunk and embedding caches
+under `data/processed`; later runs reuse them unless a source document changes.
+`--question "..."` is deliberately a one-question command for scripts and
+testing. Add `--interactive` after it if the session should continue.

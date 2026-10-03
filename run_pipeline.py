@@ -31,6 +31,8 @@ def display_results(response: dict) -> None:
         print(f"\nStrategy: {strategy}")
     if response.get("abstained"):
         print("Note: the retrieved context did not support an answer.")
+    if response.get("generation_warning"):
+        print(f"Note: {response['generation_warning']}")
     if response["sources"]:
         print("\nSources:")
         seen: set[str] = set()
@@ -55,9 +57,9 @@ def main() -> None:
     parser.add_argument(
         "--interactive",
         action="store_true",
-        help="Keep asking questions until 'exit'. This is the default when no --question is given.",
+        help="Keep asking questions until 'exit', including after an optional --question.",
     )
-    parser.add_argument("--top-k", type=int, default=3)
+    parser.add_argument("--top-k", type=int, default=5)
     args = parser.parse_args()
 
     pipeline = DocumentIntelligencePipeline(args.data_dir, processed_chunks_path=args.processed_chunks).build()
@@ -77,7 +79,8 @@ def main() -> None:
     # session builds once and then reuses the indexes for every question.
     if args.question:
         display_results(pipeline.answer(args.question, args.top_k))
-        return
+        if not args.interactive:
+            return
 
     print("\nType a question, or 'exit' to quit.")
     while True:

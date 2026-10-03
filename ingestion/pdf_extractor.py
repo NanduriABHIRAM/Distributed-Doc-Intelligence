@@ -24,6 +24,24 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+# pypdf logs this once for every page containing rotated glyphs.  Layout-mode
+# extraction can retain that text when ``layout_mode_strip_rotated`` is false;
+# the warning then adds no actionable information and drowns out the actual
+# application output.  Filtering only this known message keeps other pypdf
+# warnings (corrupt files, unreadable fonts, etc.) visible.
+_PYPDF_LAYOUT_LOGGER = logging.getLogger("pypdf._text_extraction._layout_mode._fixed_width_page")
+
+
+class _RotatedTextFilter(logging.Filter):
+    """Hide repetitive pypdf rotated-text warnings after retaining the text."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        return not record.getMessage().startswith("Rotated text discovered.")
+
+
+if not any(isinstance(item, _RotatedTextFilter) for item in _PYPDF_LAYOUT_LOGGER.filters):
+    _PYPDF_LAYOUT_LOGGER.addFilter(_RotatedTextFilter())
+
 # pdfplumber and some Tika paths emit this for undecodable glyphs.
 _CID_MARKER = re.compile(r"\(cid:\d+\)")
 
@@ -58,7 +76,13 @@ def extract_pdf_text(pdf_path: str | Path) -> tuple[str, int]:
         try:
             # Layout mode is what preserves inter-word spacing; older pypdf
             # builds lack it, hence the fallback.
-            raw = page.extract_text(extraction_mode="layout") or ""
+            raw = page.extract_text(
+                extraction_mode="layout",
+                # The default drops text whose glyphs are rotated.  Keeping it
+                # may make the layout less tidy, but preserves searchable
+                # course content rather than silently omitting it.
+                layout_mode_strip_rotated=False,
+            ) or ""
         except (TypeError, ValueError, KeyError):
             raw = page.extract_text() or ""
         pages.append(_repair_word_spacing(strip_extraction_artifacts(raw)))

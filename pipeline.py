@@ -1,6 +1,9 @@
 """End-to-end orchestration for the midterm backend prototype."""
 
 from dataclasses import dataclass, field
+import logging
+import os
+from pathlib import Path
 import re
 
 from chunking.chunker import chunk_documents  # noqa: F401 - flat chunker kept for A/B comparison
@@ -9,15 +12,19 @@ from embeddings.embedding_cache import describe
 from embeddings.generate_embeddings import generate_embeddings
 from embeddings.sentence_encoder import load_embedding_model
 from ingestion.ingestion_pipeline import run_ingestion
+from ingestion.chunk_cache import corpus_fingerprint, load_chunk_cache, save_chunk_cache
 from ingestion.processed_chunk_loader import load_processed_chunks
-from rag.answer_generator import generate_answer  # noqa: F401 - kept for A/B comparison
+from rag.answer_generator import generate_answer
 from rag.extractive_generator import generate_extractive_answer
+from rag.llm_client import is_configured as llm_is_configured
 from retrieval.bm25_retriever import BM25Retriever
 from retrieval.hybrid_retriever import HybridRetriever
 from retrieval.reranker import rerank
 from retrieval.vector_retriever import VectorRetriever
 from text_analytics.keyword_extraction import STOP_WORDS
 from text_analytics.preprocessing import expand_terms, tokenize
+
+logger = logging.getLogger(__name__)
 
 
 def _definition_question(question: str) -> bool:
@@ -105,6 +112,7 @@ class DocumentIntelligencePipeline:
     vector: VectorRetriever | None = None
     hybrid: HybridRetriever | None = None
     embedding_model_name: str = "unknown"
+    chunk_cache_path: str | None = None
 
     def build(self) -> "DocumentIntelligencePipeline":
         """Ingest, chunk, embed, and index the configured source directory."""
@@ -113,12 +121,27 @@ class DocumentIntelligencePipeline:
             document_ids = {chunk["document_id"] for chunk in self.chunks}
             self.documents = [{"document_id": document_id} for document_id in document_ids]
         else:
-            self.documents = run_ingestion(self.source_path)
-            # Structure-aware chunking: a slide or section heading is a semantic
-            # boundary that flat word-count splitting cuts through, which is how
-            # the sentence that defines a concept ends up separated from the
-            # heading that gives it meaning.
-            self.chunks = chunk_documents_structured(self.documents)
+            fingerprint = corpus_fingerprint(self.source_path)
+            cache_path = self.chunk_cache_path or os.environ.get(
+                "DDI_CHUNK_CACHE", str(Path("data") / "processed" / "chunks.json")
+            )
+            cached = load_chunk_cache(cache_path, fingerprint)
+            if cached is not None:
+                self.documents, self.chunks = cached
+                logger.info("Reused %d cached chunks from %s", len(self.chunks), cache_path)
+            else:
+                self.documents = run_ingestion(self.source_path)
+                # Structure-aware chunking: a slide or section heading is a semantic
+                # boundary that flat word-count splitting cuts through, which is how
+                # the sentence that defines a concept ends up separated from the
+                # heading that gives it meaning.
+                self.chunks = chunk_documents_structured(self.documents)
+                try:
+                    save_chunk_cache(cache_path, fingerprint, self.documents, self.chunks)
+                except OSError as error:
+                    # A cache is an optimization only.  Retrieval remains usable
+                    # even if the local directory is read-only or out of space.
+                    logger.warning("Could not save chunk cache %s: %s", cache_path, error)
         # The query encoder must be the same model that encoded the chunks.
         embedding_model = load_embedding_model()
         self.embedding_model_name = describe(embedding_model)
@@ -159,11 +182,34 @@ class DocumentIntelligencePipeline:
         hybrid_results = _diversify(rerank(question, candidates, top_k), top_k)
         return {"bm25": bm25_results, "vector": vector_results, "hybrid": hybrid_results}
 
-    def answer(self, question: str, top_k: int = 5) -> dict:
-        """Generate a grounded answer and include retrieval details."""
+    def answer(self, question: str, top_k: int = 5, generator: str = "auto") -> dict:
+        """Generate a grounded answer and include retrieval details.
+
+        ``auto`` uses the LLM when credentials are configured and otherwise
+        retains extractive answering for local, offline development.  ``llm``
+        makes LLM configuration mandatory; ``extractive`` explicitly disables
+        the generative step for evaluation comparisons.
+        """
+        if generator not in {"auto", "llm", "extractive"}:
+            raise ValueError("generator must be 'auto', 'llm', or 'extractive'.")
         results = self.search(question, top_k)
-        return {
+        response = {
             "question": question,
             "retrieval": results,
-            **generate_extractive_answer(question, results["hybrid"]),
         }
+        if generator == "llm" or (generator == "auto" and llm_is_configured()):
+            try:
+                generated = generate_answer(question, results["hybrid"])
+            except Exception as error:  # Network, quota, or provider failures must not end a student session.
+                logger.warning("LLM generation failed; using extractive answer: %s", error)
+                generated = generate_extractive_answer(question, results["hybrid"])
+                generated["generation_warning"] = "Gemini was unavailable, so this answer was extracted from the retrieved documents."
+            if generated.get("abstained"):
+                extracted = generate_extractive_answer(question, results["hybrid"])
+                if not extracted.get("abstained"):
+                    extracted["generation_warning"] = "Gemini could not ground an answer, so this answer was extracted from the retrieved documents."
+                    generated = extracted
+            response.update(generated)
+        else:
+            response.update(generate_extractive_answer(question, results["hybrid"]))
+        return response

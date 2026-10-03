@@ -1,6 +1,7 @@
 """Extract readable text from Office Open XML documents without extra packages."""
 
 from pathlib import Path
+import re
 from zipfile import ZipFile
 from xml.etree import ElementTree
 
@@ -15,6 +16,31 @@ def _read_xml_text(archive: ZipFile, member: str, namespace: str) -> str:
     return " ".join(node.text for node in root.iter(f"{{{namespace}}}t") if node.text)
 
 
+def _slide_paragraphs(archive: ZipFile, slide_file: str) -> list[str]:
+    """Return each text shape on a slide as its own line.
+
+    A slide is a set of independent shapes -- a title, bullets, a diagram
+    label -- and each carries its own meaning. Joining them into one line
+    destroys the boundaries the chunker relies on: heading patterns are
+    anchored to line starts, so with a whole slide collapsed onto one line the
+    chunker could only ever see the *first* "Slide N:" marker. Every later
+    slide ran on inside the previous one's body, producing chunks titled
+    "Slide 4" whose text begins "Slide 5: Process States", and answers that
+    spliced two unrelated slides together.
+    """
+    root = ElementTree.fromstring(archive.read(slide_file))
+    tag = f"{{{DRAWING_NAMESPACE}}}p"
+    paragraphs: list[str] = []
+    for paragraph in root.iter(tag):
+        text = "".join(
+            node.text or ""
+            for node in paragraph.iter(f"{{{DRAWING_NAMESPACE}}}t")
+        ).strip()
+        if text:
+            paragraphs.append(re.sub(r"\s+", " ", text))
+    return paragraphs
+
+
 def extract_presentation_text(presentation_path: str | Path) -> tuple[str, int]:
     """Return slide text and slide count from a PPTX or PPSX presentation."""
     with ZipFile(presentation_path) as archive:
@@ -24,10 +50,14 @@ def extract_presentation_text(presentation_path: str | Path) -> tuple[str, int]:
         )
         slides = []
         for index, slide_file in enumerate(slide_files, 1):
-            slide_text = _read_xml_text(archive, slide_file, DRAWING_NAMESPACE)
-            if slide_text:
-                slides.append(f"Slide {index}: {slide_text}")
-    return "\n".join(slides), len(slides)
+            paragraphs = _slide_paragraphs(archive, slide_file)
+            if not paragraphs:
+                continue
+            # The marker occupies its own line so the chunker sees a heading
+            # boundary at the true start of this slide's content.
+            slides.append(f"Slide {index}")
+            slides.extend(paragraphs)
+    return "\n".join(slides), len(slide_files)
 
 
 def extract_docx_text(docx_path: str | Path) -> tuple[str, int]:
